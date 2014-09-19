@@ -137,6 +137,20 @@ namespace LoLNotes.Gui
             }
         }
 
+        bool _models;
+        public bool Models
+        {
+            get
+            {
+                return _models;
+            }
+            set
+            {
+                _models = value;
+                OnPropertyChanged("Models");
+            }
+        }
+
 
         LoadDataEnum _loadwhatdata;
         public LoadDataEnum LoadWhatData
@@ -162,6 +176,7 @@ namespace LoLNotes.Gui
 			_moduleresolver = "";
             _defaultgametab = "Recent";
             _loadwhatdata = LoadDataEnum.All;
+            _models = false;
 		}                 
 
 		public bool Save(string file)

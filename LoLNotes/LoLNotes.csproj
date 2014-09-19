@@ -182,6 +182,7 @@
     <Compile Include="Messaging\IMessageProcessor.cs" />
     <Compile Include="Properties\CommitBase.cs" />
     <Compile Include="Properties\CommitInfo.cs" />
+    <Compile Include="TreeNodeModified.cs" />
     <Compile Include="Util\CertificateInstaller.cs" />
     <Compile Include="Proxy\CallResultWait.cs" />
     <Compile Include="Proxy\IProxyHost.cs" />
@@ -279,9 +280,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Certificates\EUN_prod.eun1.lol.riotgames.com.p12">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Certificates\EUW_prod.eu.lol.riotgames.com.p12">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Certificates\NA_prod.na1.lol.riotgames.com.p12">

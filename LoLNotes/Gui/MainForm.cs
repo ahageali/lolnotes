@@ -84,6 +84,9 @@ namespace LoLNotes.Gui
 
 		MainSettings Settings { get { return MainSettings.Instance; } }
 
+        const string FilePath = "C:\\riotmodels";
+        int FailedFiles = 0;
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -320,6 +323,7 @@ namespace LoLNotes.Gui
             TopChampsBox.Checked = (Settings.LoadWhatData & LoadDataEnum.TopChamps) != 0;
             StatsBox.Checked = (Settings.LoadWhatData & LoadDataEnum.Stats) != 0;
             RecentGamesBox.Checked = (Settings.LoadWhatData & LoadDataEnum.RecentGames) != 0;
+            boxModels.Checked = Settings.Models;
 		}
 
 		readonly object settingslock = new object();
@@ -1024,6 +1028,100 @@ namespace LoLNotes.Gui
 			return arg.ToString();
 		}
 
+        void CreateFile(TreeNodeModified root)
+        {
+            TreeNodeModified.NodeType type = root.Type;
+            switch(type)
+            {
+                case TreeNodeModified.NodeType.ASObject:
+                    if (root.ObjName != null && root.Nodes.Count > 0)
+                    {
+                        string file = "using System.Collections.Generic;";
+                        file += Environment.NewLine + Environment.NewLine;
+                        if (root.ObjName == "ASObject")
+                        {
+                            FailedFiles++;
+                        }
+                        string[] typeSplit = root.ObjName == "ASObject" ? new string[] { "unknown", "ASObject" + FailedFiles.ToString() } : root.ObjName.Split('.');
+                        file += "namespace ";
+                        for (int i = 0; i < typeSplit.Length - 1; i++)
+                        {
+                            file += typeSplit[i] + ".";
+                        }
+                        file = file.Substring(0, file.Length - 1);
+                        file += Environment.NewLine + "{" + Environment.NewLine + "class " + typeSplit.Last() + Environment.NewLine + "{" + Environment.NewLine;
+                        foreach (TreeNodeModified child in root.Nodes)
+                        {
+                            string childName = "public ";
+                            CreateFile(child);
+                            if (child.Type == TreeNodeModified.NodeType.String)
+                            {
+                                childName += "String";
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.Integer)
+                            {
+                                childName += "Int32";
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.Double)
+                            {
+                                childName += "Double";
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.ArrayCollection || child.Type == TreeNodeModified.NodeType.Array)
+                            {
+                                childName += "object[]";
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.ASObject)
+                            {
+                                childName += child.ObjName;
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.Dictionary)
+                            {
+                                childName += "Dictionary<string,object>";
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.Object)
+                            {
+                                childName += "object";
+                            }
+                            else if (child.Type == TreeNodeModified.NodeType.Boolean)
+                            {
+                                childName += "Boolean";
+                            }
+                            childName += " " + child.ChildName + " { get; set; }" + Environment.NewLine;
+                            file += childName;
+                        }
+                        file += "}" + Environment.NewLine + "}";
+                        string newDirectory = FilePath;
+                        for (int i = 0; i < typeSplit.Length - 1; i++)
+                        {
+                            newDirectory += "\\" + typeSplit[i];
+                        }
+                        DirectoryInfo newDir = Directory.CreateDirectory(newDirectory);
+                        if (!newDir.GetFiles().Any(x => x.Name == typeSplit.Last() + ".cs"))
+                        {
+                            StreamWriter writer = new StreamWriter(newDirectory + "\\" + typeSplit.Last() + ".cs");
+                            writer.Write(file);
+                            writer.Close();
+                        }
+                    }
+                    break;
+                case TreeNodeModified.NodeType.Array:
+                case TreeNodeModified.NodeType.ArrayCollection:
+                    foreach (TreeNodeModified child in root.Nodes)
+                    {
+                        CreateFile(child);
+                    }
+                    break;
+                case TreeNodeModified.NodeType.Dictionary:
+                    foreach (TreeNodeModified child in root.Nodes)
+                    {
+                        CreateFile(child);
+                    }
+                    break;
+                case TreeNodeModified.NodeType.String:
+                    break;
+            }
+        }
+
 		void Connection_Call(object sender, Notify call, Notify result)
 		{
 			if (InvokeRequired)
@@ -1047,8 +1145,27 @@ namespace LoLNotes.Gui
 			};
 
 			CallView.Items.Add(item);
+            if (boxModels.Checked)
+            {
+                List<Notify> lst = new List<Notify> { call, result };
 
+                foreach (Notify notify in lst)
+                {
+                    var children = new List<TreeNodeModified>();
+                    var bodies = RtmpUtil.GetBodies(notify);
+                    foreach (var body in bodies)
+                    {
+                        children.Add(GetNode(body.Item1) ?? new TreeNodeModified(body.Item1 != null ? body.Item1.ToString() : ""));
+                    }
+                    foreach (var child in children)
+                    {
+                        CreateFile(child);
+                    }
+                }
+            }
 		}
+
+
 		void Connection_Notify(object sender, Notify notify)
 		{
 			if (InvokeRequired)
@@ -1061,7 +1178,7 @@ namespace LoLNotes.Gui
 				return;
 
 			var text = string.Format(
-				"Recv {0}({1})",
+				"Recv Service Method Name: {0} Arguments: ({1}) ServiceName: , Subtopic: ",
 				!string.IsNullOrEmpty(notify.ServiceCall.ServiceMethodName) ? notify.ServiceCall.ServiceMethodName + " " : "",
 				string.Join(", ", notify.ServiceCall.Arguments.Select(CallArgToString))
 			);
@@ -1071,6 +1188,19 @@ namespace LoLNotes.Gui
 			};
 
 			CallView.Items.Add(item);
+            if (boxModels.Checked)
+            {
+                var children = new List<TreeNodeModified>();
+                var bodies = RtmpUtil.GetBodies(notify);
+                foreach (var body in bodies)
+                {
+                    children.Add(GetNode(body.Item1) ?? new TreeNodeModified(body.Item1 != null ? body.Item1.ToString() : ""));
+                }
+                foreach (var child in children)
+                {
+                    CreateFile(child);
+                }
+            }
 		}
 
 		private void clearToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1083,17 +1213,45 @@ namespace LoLNotes.Gui
 			CallView.Columns[0].Width = CallView.Width;
 		}
 
-		static TreeNode GetNode(object arg, string name = "")
+        private static void SetPrimitiveNodeType(TreeNodeModified node, object obj)
+        {
+            if (obj is Int32)
+            {
+                node.Type = TreeNodeModified.NodeType.Integer;
+            }
+            else if (obj is Double)
+            {
+                node.Type = TreeNodeModified.NodeType.Double;
+            }
+            else if (obj is Boolean)
+            {
+                node.Type = TreeNodeModified.NodeType.Boolean;
+            }
+            else if (obj is String)
+            {
+                node.Type = TreeNodeModified.NodeType.String;
+            }
+            else
+            {
+                node.Type = TreeNodeModified.NodeType.Object;
+            }
+        }
+
+        static TreeNodeModified GetNode(object arg, string name = "")
 		{
 			if (arg is ASObject)
 			{
 				var ao = (ASObject)arg;
-				var children = new List<TreeNode>();
+                var children = new List<TreeNodeModified>();
 				foreach (var kv in ao)
 				{
 					var node = GetNode(kv.Value, kv.Key);
 					if (node == null)
-						node = new TreeNode(kv.Key + " = " + (kv.Value ?? "null"));
+                    { 
+                        node = new TreeNodeModified(kv.Key + " = " + (kv.Value ?? "null"));
+                        SetPrimitiveNodeType(node, kv.Value);
+                    }
+                    node.ChildName = kv.Key;
 					children.Add(node);
 				}
 
@@ -1105,8 +1263,10 @@ namespace LoLNotes.Gui
 				if (!string.IsNullOrEmpty(text))
 					text += " ";
 				text += (typename != null ? "(" + typename + ")" : "null");
-
-				return new TreeNode(text, children.ToArray());
+                TreeNodeModified product = new TreeNodeModified(text, children.ToArray());
+                product.Type = TreeNodeModified.NodeType.ASObject;
+                product.ObjName = typename;
+				return product;
 			}
 			if (arg is Dictionary<string, object>)
 			{
@@ -1114,25 +1274,34 @@ namespace LoLNotes.Gui
 					name = "Dictionary";
 
 				var dict = (Dictionary<string, object>)arg;
-				var children = new List<TreeNode>();
+                var children = new List<TreeNodeModified>();
 				foreach (var kv in dict)
 				{
 					var node = GetNode(kv.Value, kv.Key);
 					if (node == null)
-						node = new TreeNode(kv.Key + " = " + (kv.Value ?? "null"));
+                    { 
+                        node = new TreeNodeModified(kv.Key + " = " + (kv.Value ?? "null"));
+                        SetPrimitiveNodeType(node, kv.Value);
+                    }
+                    node.ChildName = kv.Key;
 					children.Add(node);
 				}
-				return new TreeNode(name, children.ToArray());
+                TreeNodeModified product = new TreeNodeModified(name, children.ToArray());
+                product.Type = TreeNodeModified.NodeType.Dictionary;
+                return product;
 			}
 			if (arg is ArrayCollection)
 			{
 				var list = (ArrayCollection)arg;
-				var children = new List<TreeNode>();
+                var children = new List<TreeNodeModified>();
 				for (int i = 0; i < list.Count; i++)
 				{
 					var node = GetNode(list[i], "[" + i + "]");
 					if (node == null)
-						node = new TreeNode(list[i].ToString());
+                    { 
+                        node = new TreeNodeModified(list[i].ToString());
+                        SetPrimitiveNodeType(node, list[i]);
+                    }
 					children.Add(node);
 				}
 				if (!string.IsNullOrEmpty(name))
@@ -1142,17 +1311,22 @@ namespace LoLNotes.Gui
 				{
 					name += " = { }";
 				}
-				return new TreeNode(name, children.ToArray());
+                TreeNodeModified product = new TreeNodeModified(name, children.ToArray());
+                product.Type = TreeNodeModified.NodeType.ArrayCollection;
+                return product;
 			}
 			if (arg is object[])
 			{
 				var list = (object[])arg;
-				var children = new List<TreeNode>();
+                var children = new List<TreeNodeModified>();
 				for (int i = 0; i < list.Length; i++)
 				{
 					var node = GetNode(list[i], "[" + i + "]");
 					if (node == null)
-						node = new TreeNode(list[i].ToString());
+                    { 
+                        node = new TreeNodeModified(list[i].ToString());
+                        SetPrimitiveNodeType(node, list[i]);
+                    }
 					children.Add(node);
 				}
 				if (!string.IsNullOrEmpty(name))
@@ -1162,7 +1336,9 @@ namespace LoLNotes.Gui
 				{
 					name += " = { }";
 				}
-				return new TreeNode(name, children.ToArray());
+                TreeNodeModified product = new TreeNodeModified(name, children.ToArray());
+                product.Type = TreeNodeModified.NodeType.Array;
+                return product;
 			}
 			return null;
 		}
@@ -1352,6 +1528,11 @@ namespace LoLNotes.Gui
                 Settings.LoadWhatData |= LoadDataEnum.TopChamps;
             else
                 Settings.LoadWhatData &= ~LoadDataEnum.TopChamps;
+        }
+
+        private void boxModels_Click(object sender, EventArgs e)
+        {
+            Settings.Models = boxModels.Checked;
         }
 	}
 }

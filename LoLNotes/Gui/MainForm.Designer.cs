@@ -46,10 +46,16 @@ namespace LoLNotes.Gui
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.teamControl1 = new LoLNotes.Gui.Controls.TeamControl();
             this.PlayerEditStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.teamControl2 = new LoLNotes.Gui.Controls.TeamControl();
             this.SettingsTab = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.TopChampsBox = new System.Windows.Forms.CheckBox();
+            this.StatsBox = new System.Windows.Forms.CheckBox();
+            this.RecentGamesBox = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.DefaultGameTab = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -82,12 +88,7 @@ namespace LoLNotes.Gui
             this.dumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.CallTree = new System.Windows.Forms.TreeView();
-            this.teamControl1 = new LoLNotes.Gui.Controls.TeamControl();
-            this.teamControl2 = new LoLNotes.Gui.Controls.TeamControl();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.RecentGamesBox = new System.Windows.Forms.CheckBox();
-            this.StatsBox = new System.Windows.Forms.CheckBox();
-            this.TopChampsBox = new System.Windows.Forms.CheckBox();
+            this.boxModels = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.NewsTab.SuspendLayout();
             this.GameTab.SuspendLayout();
@@ -97,6 +98,7 @@ namespace LoLNotes.Gui
             this.splitContainer2.SuspendLayout();
             this.PlayerEditStrip.SuspendLayout();
             this.SettingsTab.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -112,7 +114,6 @@ namespace LoLNotes.Gui
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.CallEditStrip.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -214,6 +215,19 @@ namespace LoLNotes.Gui
             this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // teamControl1
+            // 
+            this.teamControl1.BackColor = System.Drawing.Color.White;
+            this.teamControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.teamControl1.Location = new System.Drawing.Point(0, 0);
+            this.teamControl1.MinimumSize = new System.Drawing.Size(500, 836);
+            this.teamControl1.Name = "teamControl1";
+            this.teamControl1.PlayerContextMenuStrip = this.PlayerEditStrip;
+            this.teamControl1.Size = new System.Drawing.Size(575, 836);
+            this.teamControl1.TabIndex = 0;
+            this.teamControl1.TeamSize = 5;
+            this.teamControl1.Text = "Team 1";
+            // 
             // PlayerEditStrip
             // 
             this.PlayerEditStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -236,8 +250,22 @@ namespace LoLNotes.Gui
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
+            // teamControl2
+            // 
+            this.teamControl2.BackColor = System.Drawing.Color.White;
+            this.teamControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.teamControl2.Location = new System.Drawing.Point(0, 0);
+            this.teamControl2.MinimumSize = new System.Drawing.Size(500, 836);
+            this.teamControl2.Name = "teamControl2";
+            this.teamControl2.PlayerContextMenuStrip = this.PlayerEditStrip;
+            this.teamControl2.Size = new System.Drawing.Size(575, 836);
+            this.teamControl2.TabIndex = 1;
+            this.teamControl2.TeamSize = 5;
+            this.teamControl2.Text = "Team 2";
+            // 
             // SettingsTab
             // 
+            this.SettingsTab.Controls.Add(this.boxModels);
             this.SettingsTab.Controls.Add(this.groupBox5);
             this.SettingsTab.Controls.Add(this.groupBox4);
             this.SettingsTab.Controls.Add(this.groupBox3);
@@ -254,6 +282,57 @@ namespace LoLNotes.Gui
             this.SettingsTab.TabIndex = 2;
             this.SettingsTab.Text = "Settings";
             this.SettingsTab.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.TopChampsBox);
+            this.groupBox5.Controls.Add(this.StatsBox);
+            this.groupBox5.Controls.Add(this.RecentGamesBox);
+            this.groupBox5.Location = new System.Drawing.Point(172, 59);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(125, 94);
+            this.groupBox5.TabIndex = 13;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Load What Stats";
+            // 
+            // TopChampsBox
+            // 
+            this.TopChampsBox.AutoSize = true;
+            this.TopChampsBox.Checked = true;
+            this.TopChampsBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TopChampsBox.Location = new System.Drawing.Point(6, 65);
+            this.TopChampsBox.Name = "TopChampsBox";
+            this.TopChampsBox.Size = new System.Drawing.Size(86, 17);
+            this.TopChampsBox.TabIndex = 2;
+            this.TopChampsBox.Text = "Top Champs";
+            this.TopChampsBox.UseVisualStyleBackColor = true;
+            this.TopChampsBox.CheckedChanged += new System.EventHandler(this.TopChampsBox_CheckedChanged);
+            // 
+            // StatsBox
+            // 
+            this.StatsBox.AutoSize = true;
+            this.StatsBox.Checked = true;
+            this.StatsBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.StatsBox.Location = new System.Drawing.Point(6, 42);
+            this.StatsBox.Name = "StatsBox";
+            this.StatsBox.Size = new System.Drawing.Size(50, 17);
+            this.StatsBox.TabIndex = 1;
+            this.StatsBox.Text = "Stats";
+            this.StatsBox.UseVisualStyleBackColor = true;
+            this.StatsBox.CheckedChanged += new System.EventHandler(this.StatsBox_CheckedChanged);
+            // 
+            // RecentGamesBox
+            // 
+            this.RecentGamesBox.AutoSize = true;
+            this.RecentGamesBox.Checked = true;
+            this.RecentGamesBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.RecentGamesBox.Location = new System.Drawing.Point(6, 19);
+            this.RecentGamesBox.Name = "RecentGamesBox";
+            this.RecentGamesBox.Size = new System.Drawing.Size(97, 17);
+            this.RecentGamesBox.TabIndex = 0;
+            this.RecentGamesBox.Text = "Recent Games";
+            this.RecentGamesBox.UseVisualStyleBackColor = true;
+            this.RecentGamesBox.CheckedChanged += new System.EventHandler(this.RecentGamesBox_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -590,82 +669,16 @@ namespace LoLNotes.Gui
             this.CallTree.Size = new System.Drawing.Size(1157, 568);
             this.CallTree.TabIndex = 0;
             // 
-            // teamControl1
+            // boxModels
             // 
-            this.teamControl1.BackColor = System.Drawing.Color.White;
-            this.teamControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.teamControl1.Location = new System.Drawing.Point(0, 0);
-            this.teamControl1.MinimumSize = new System.Drawing.Size(500, 836);
-            this.teamControl1.Name = "teamControl1";
-            this.teamControl1.PlayerContextMenuStrip = this.PlayerEditStrip;
-            this.teamControl1.Size = new System.Drawing.Size(575, 836);
-            this.teamControl1.TabIndex = 0;
-            this.teamControl1.TeamSize = 5;
-            this.teamControl1.Text = "Team 1";
-            // 
-            // teamControl2
-            // 
-            this.teamControl2.BackColor = System.Drawing.Color.White;
-            this.teamControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.teamControl2.Location = new System.Drawing.Point(0, 0);
-            this.teamControl2.MinimumSize = new System.Drawing.Size(500, 836);
-            this.teamControl2.Name = "teamControl2";
-            this.teamControl2.PlayerContextMenuStrip = this.PlayerEditStrip;
-            this.teamControl2.Size = new System.Drawing.Size(575, 836);
-            this.teamControl2.TabIndex = 1;
-            this.teamControl2.TeamSize = 5;
-            this.teamControl2.Text = "Team 2";
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.TopChampsBox);
-            this.groupBox5.Controls.Add(this.StatsBox);
-            this.groupBox5.Controls.Add(this.RecentGamesBox);
-            this.groupBox5.Location = new System.Drawing.Point(172, 59);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(125, 94);
-            this.groupBox5.TabIndex = 13;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Load What Stats";
-            // 
-            // RecentGamesBox
-            // 
-            this.RecentGamesBox.AutoSize = true;
-            this.RecentGamesBox.Checked = true;
-            this.RecentGamesBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.RecentGamesBox.Location = new System.Drawing.Point(6, 19);
-            this.RecentGamesBox.Name = "RecentGamesBox";
-            this.RecentGamesBox.Size = new System.Drawing.Size(97, 17);
-            this.RecentGamesBox.TabIndex = 0;
-            this.RecentGamesBox.Text = "Recent Games";
-            this.RecentGamesBox.UseVisualStyleBackColor = true;
-            this.RecentGamesBox.CheckedChanged += new System.EventHandler(this.RecentGamesBox_CheckedChanged);
-            // 
-            // StatsBox
-            // 
-            this.StatsBox.AutoSize = true;
-            this.StatsBox.Checked = true;
-            this.StatsBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.StatsBox.Location = new System.Drawing.Point(6, 42);
-            this.StatsBox.Name = "StatsBox";
-            this.StatsBox.Size = new System.Drawing.Size(50, 17);
-            this.StatsBox.TabIndex = 1;
-            this.StatsBox.Text = "Stats";
-            this.StatsBox.UseVisualStyleBackColor = true;
-            this.StatsBox.CheckedChanged += new System.EventHandler(this.StatsBox_CheckedChanged);
-            // 
-            // TopChampsBox
-            // 
-            this.TopChampsBox.AutoSize = true;
-            this.TopChampsBox.Checked = true;
-            this.TopChampsBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TopChampsBox.Location = new System.Drawing.Point(6, 65);
-            this.TopChampsBox.Name = "TopChampsBox";
-            this.TopChampsBox.Size = new System.Drawing.Size(86, 17);
-            this.TopChampsBox.TabIndex = 2;
-            this.TopChampsBox.Text = "Top Champs";
-            this.TopChampsBox.UseVisualStyleBackColor = true;
-            this.TopChampsBox.CheckedChanged += new System.EventHandler(this.TopChampsBox_CheckedChanged);
+            this.boxModels.AutoSize = true;
+            this.boxModels.Location = new System.Drawing.Point(16, 368);
+            this.boxModels.Name = "boxModels";
+            this.boxModels.Size = new System.Drawing.Size(202, 17);
+            this.boxModels.TabIndex = 14;
+            this.boxModels.Text = "Create C# model files in C:\\riotmodels";
+            this.boxModels.UseVisualStyleBackColor = true;
+            this.boxModels.Click += new System.EventHandler(this.boxModels_Click);
             // 
             // MainForm
             // 
@@ -673,7 +686,7 @@ namespace LoLNotes.Gui
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1165, 868);
             this.Controls.Add(this.tabControl1);
-            this.MinimumSize = new System.Drawing.Size(800, 38);
+            this.MinimumSize = new System.Drawing.Size(800, 39);
             this.Name = "MainForm";
             this.Text = "LoL";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
@@ -689,6 +702,8 @@ namespace LoLNotes.Gui
             this.PlayerEditStrip.ResumeLayout(false);
             this.SettingsTab.ResumeLayout(false);
             this.SettingsTab.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -707,8 +722,6 @@ namespace LoLNotes.Gui
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.CallEditStrip.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -766,6 +779,7 @@ namespace LoLNotes.Gui
         private System.Windows.Forms.CheckBox TopChampsBox;
         private System.Windows.Forms.CheckBox StatsBox;
         private System.Windows.Forms.CheckBox RecentGamesBox;
+        private System.Windows.Forms.CheckBox boxModels;
 
     }
 }

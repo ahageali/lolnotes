@@ -1,3 +1,3 @@
-[assembly: AssemblyCommit("commit 9471ae5aa9f9fc38b9e4ce46389895230e873771\nAuthor: Will <will@bladecoding.com>\nDate:   Sun Aug 19 01:04:24 2012 -0400\n\n    Changed GameIds/AccountIds/SummonerIds should be Int64s to prevent overflowing.\n", "9471ae5aa9f9fc38b9e4ce46389895230e873771", "Will", "  Sun Aug 19 01:04:24 2012 -0400", "Changed GameIds/AccountIds/SummonerIds should be Int64s to prevent overflowing.", "will@bladecoding.com")]
+[assembly: AssemblyCommit("commit 75f3ab2321bc9af5c29724e097d73f106e5f15c8\nAuthor: Will <will@bladecoding.com>\nDate:   Wed Jun 18 21:58:04 2014 -0400\n\n    Added euw1 certificate\n", "75f3ab2321bc9af5c29724e097d73f106e5f15c8", "Will", "  Wed Jun 18 21:58:04 2014 -0400", "Added euw1 certificate", "will@bladecoding.com")]
 
 								
